@@ -97,7 +97,7 @@
                 type: null,
                 value: null,
                 checked: null
-            }
+            };
         }
 
         /*
@@ -291,8 +291,9 @@
 
         valid_emails: function(field) {
             var result = field.value.split(",");
-            for(var i = 0;i < result.length;i++) {
-                if(!emailRegex.test(result[i])) {
+            
+            for (var i = 0; i < result.length; i++) {
+                if (!emailRegex.test(result[i])) {
                     return false;
                 }
             }
@@ -320,8 +321,8 @@
             if (!numericRegex.test(length)) {
                 return false;
             }
-
-            return (field.value.length == length);
+            
+            return (field.value.length === length);
         },
 
         greater_than: function(field, param) {
