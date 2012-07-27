@@ -43,7 +43,7 @@
      * Define the regular expressions that will be used
      */
 
-    var ruleRegex = /^(.+)\[(.+)\]$/,
+    var ruleRegex = /^(.+?)\[(.+)\]$/,
         numericRegex = /^[0-9]+$/,
         integerRegex = /^\-?[0-9]+$/,
         decimalRegex = /^\-?[0-9]*\.?[0-9]+$/,
@@ -112,22 +112,6 @@
                 } catch(e) {}
             }
         })(this);
-    },
-
-    attributeValue = function (element, attributeName) {
-        var i;
-
-        if ((element.length > 0) && (element[0].type === "radio")) {
-            for (i = 0; i < element.length; i++) {
-                if (element[i].checked) {
-                    return element[i][attributeName];
-                }
-            }
-
-            return;
-        }
-
-        return element[attributeName];
     };
 
     /*
@@ -170,10 +154,10 @@
                     element = this.form[field.name];
 
                 if (element && element !== undefined) {
-                    field.id = attributeValue(element, "id");
-                    field.type = (element.length > 0) ? element[0].type : element.type;
-                    field.value = attributeValue(element, "value");
-                    field.checked = attributeValue(element, "checked");
+                    field.id = element.id;
+                    field.type = element.type;
+                    field.value = element.value;
+                    field.checked = element.checked;
                 }
 
                 /*
@@ -223,14 +207,13 @@
         for (var i = 0, ruleLength = rules.length; i < ruleLength; i++) {
             var method = rules[i],
                 param = null,
-                failed = false,
-                parts = ruleRegex.exec(method);
+                failed = false;
 
             /*
              * If the rule has a parameter (i.e. matches[param]) split it out
              */
 
-            if (parts) {
+            if (parts = ruleRegex.exec(method)) {
                 method = parts[1];
                 param = parts[2];
             }
@@ -270,11 +253,11 @@
                         message = message.replace('%s', (this.fields[param]) ? this.fields[param].display : param);
                     }
                 }
-
+                
                 this.errors.push({
                     id: field.id,
                     name: field.name,
-                    message: message
+                    message: message 
                 });
 
                 // Break out so as to not spam with validation errors (i.e. required and valid_email)
@@ -292,7 +275,7 @@
         required: function(field) {
             var value = field.value;
 
-            if ((field.type === 'checkbox') || (field.type === 'radio')) {
+            if (field.type === 'checkbox') {
                 return (field.checked === true);
             }
 
@@ -300,9 +283,7 @@
         },
 
         matches: function(field, matchName) {
-            var el = this.form[matchName];
-
-            if (el) {
+            if (el = this.form[matchName]) {
                 return field.value === el.value;
             }
 
@@ -315,13 +296,13 @@
 
         valid_emails: function(field) {
             var result = field.value.split(",");
-
+            
             for (var i = 0; i < result.length; i++) {
                 if (!emailRegex.test(result[i])) {
                     return false;
                 }
             }
-
+            
             return true;
         },
 
@@ -345,7 +326,7 @@
             if (!numericRegex.test(length)) {
                 return false;
             }
-
+            
             return (field.value.length === parseInt(length, 10));
         },
 
