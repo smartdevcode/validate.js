@@ -32,8 +32,7 @@
             is_natural: 'The %s field must contain only positive numbers.',
             is_natural_no_zero: 'The %s field must contain a number greater than zero.',
             valid_ip: 'The %s field must contain a valid IP.',
-            valid_base64: 'The %s field must contain a base64 string.',
-            is_file_type: 'The %s field must contain only %s files.'
+            valid_base64: 'The %s field must contain a base64 string.'
         },
         callback: function(errors) {
 
@@ -254,11 +253,11 @@
                         message = message.replace('%s', (this.fields[param]) ? this.fields[param].display : param);
                     }
                 }
-
+                
                 this.errors.push({
                     id: field.id,
                     name: field.name,
-                    message: message
+                    message: message 
                 });
 
                 // Break out so as to not spam with validation errors (i.e. required and valid_email)
@@ -297,13 +296,13 @@
 
         valid_emails: function(field) {
             var result = field.value.split(",");
-
+            
             for (var i = 0; i < result.length; i++) {
                 if (!emailRegex.test(result[i])) {
                     return false;
                 }
             }
-
+            
             return true;
         },
 
@@ -327,7 +326,7 @@
             if (!numericRegex.test(length)) {
                 return false;
             }
-
+            
             return (field.value.length === parseInt(length, 10));
         },
 
@@ -385,24 +384,7 @@
 
         valid_base64: function(field) {
             return (base64Regex.test(field.value));
-        },
-        is_file_type: function(field,type) {
-            if (field.type !== 'file') {
-                //just ignore fields that are not of type="file"
-                return true;
-            }
-
-            var ext = field.value.substr( (field.value.lastIndexOf('.') +1) ),
-                typeArray = type.split(','),
-                inArray = false,
-                i=0, len = typeArray.length;
-
-            for (i; i < len; i++) {
-                if (ext == typeArray[i]) inArray = true;
-            }
-
-            return inArray;
-        },
+        }
     };
 
     window.FormValidator = FormValidator;
