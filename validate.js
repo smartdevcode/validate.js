@@ -1,5 +1,5 @@
 /*
- * validate.js 1.1
+ * validate.js 1.2
  * Copyright (c) 2011 Rick Harrison, http://rickharrison.me
  * validate.js is open sourced under the MIT license.
  * Portions of validate.js are inspired by CodeIgniter.
@@ -33,7 +33,8 @@
             is_natural_no_zero: 'The %s field must contain a number greater than zero.',
             valid_ip: 'The %s field must contain a valid IP.',
             valid_base64: 'The %s field must contain a base64 string.',
-            valid_credit_card: 'The %s field must contain a vaild credit card number'
+            valid_credit_card: 'The %s field must contain a vaild credit card number',
+            is_file_type: 'The %s field must contain only %s files.'
         },
         callback: function(errors) {
 
@@ -114,6 +115,22 @@
                 } catch(e) {}
             }
         })(this);
+    },
+
+    attributeValue = function (element, attributeName) {
+        var i;
+
+        if ((element.length > 0) && (element[0].type === 'radio')) {
+            for (i = 0; i < element.length; i++) {
+                if (element[i].checked) {
+                    return element[i][attributeName];
+                }
+            }
+
+            return;
+        }
+
+        return element[attributeName];
     };
 
     /*
@@ -156,10 +173,10 @@
                     element = this.form[field.name];
 
                 if (element && element !== undefined) {
-                    field.id = element.id;
-                    field.type = element.type;
-                    field.value = element.value;
-                    field.checked = element.checked;
+                    field.id = attributeValue(element, 'id');
+                    field.type = (element.length > 0) ? element[0].type : element.type;
+                    field.value = attributeValue(element, 'value');
+                    field.checked = attributeValue(element, 'checked');
                 }
 
                 /*
@@ -209,13 +226,14 @@
         for (var i = 0, ruleLength = rules.length; i < ruleLength; i++) {
             var method = rules[i],
                 param = null,
-                failed = false;
+                failed = false,
+                parts = ruleRegex.exec(method);
 
             /*
              * If the rule has a parameter (i.e. matches[param]) split it out
              */
 
-            if (parts = ruleRegex.exec(method)) {
+            if (parts) {
                 method = parts[1];
                 param = parts[2];
             }
@@ -255,7 +273,7 @@
                         message = message.replace('%s', (this.fields[param]) ? this.fields[param].display : param);
                     }
                 }
-                
+
                 this.errors.push({
                     id: field.id,
                     name: field.name,
@@ -278,7 +296,7 @@
         required: function(field) {
             var value = field.value;
 
-            if (field.type === 'checkbox') {
+            if ((field.type === 'checkbox') || (field.type === 'radio')) {
                 return (field.checked === true);
             }
 
@@ -286,7 +304,9 @@
         },
 
         matches: function(field, matchName) {
-            if (el = this.form[matchName]) {
+            var el = this.form[matchName];
+
+            if (el) {
                 return field.value === el.value;
             }
 
@@ -299,13 +319,13 @@
 
         valid_emails: function(field) {
             var result = field.value.split(",");
-            
+
             for (var i = 0; i < result.length; i++) {
                 if (!emailRegex.test(result[i])) {
                     return false;
                 }
             }
-            
+
             return true;
         },
 
@@ -329,7 +349,7 @@
             if (!numericRegex.test(length)) {
                 return false;
             }
-            
+
             return (field.value.length === parseInt(length, 10));
         },
 
@@ -388,6 +408,7 @@
         valid_base64: function(field) {
             return (base64Regex.test(field.value));
         },
+        
         valid_credit_card: function(field){
             // Luhn Check Code from https://gist.github.com/4075533
             // accept only digits, dashes or spaces
@@ -409,6 +430,24 @@
             }
          
             return (nCheck % 10) == 0;
+        },
+        
+        is_file_type: function(field,type) {
+            if (field.type !== 'file') {
+                return true;
+            }
+
+            var ext = field.value.substr((field.value.lastIndexOf('.') + 1)),
+                typeArray = type.split(','),
+                inArray = false,
+                i = 0,
+                len = typeArray.length;
+
+            for (i; i < len; i++) {
+                if (ext == typeArray[i]) inArray = true;
+            }
+
+            return inArray;
         }
     };
 
