@@ -53,5 +53,4 @@ jQuery: https://github.com/magizh/validate_helper
 
 jnhwkim's fork added multi-language support viewable at https://github.com/jnhwkim/validate.js
 
-Chinese - https://github.com/chilijung/validate.js
 
