@@ -256,15 +256,7 @@
 
                 if (typeof this.handlers[method] === 'function') {
                     if (this.handlers[method].apply(this, [field.value]) === false) {
-                        if (param === undefined) {
-                            if (this.handlers[method].apply(this, [field.value]) === false) {
-                                failed = true;
-                            }
-                        } else {
-                            if (this.handlers[method].apply(this, [field.value, param]) === false) {
-                                failed = true;
-                            }
-                        }
+                        failed = true;
                     }
                 }
             }
