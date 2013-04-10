@@ -16,7 +16,6 @@
         messages: {
             required: 'The %s field is required.',
             matches: 'The %s field does not match the %s field.',
-            default: 'The %s field is still set to default, please change',
             valid_email: 'The %s field must contain a valid email address.',
             valid_emails: 'The %s field must contain all valid email addresses.',
             min_length: 'The %s field must be at least %s characters in length.',
@@ -65,7 +64,7 @@
     /*
      * The exposed public object to validate a form:
      *
-     * @param formName - String - The name attribute of the form (i.e. <form name="myForm"></form>)
+     * @param formNameorNode - String - The name attribute of the form (i.e. <form name="myForm"></form>) or Node of the form element
      * @param fields - Array - [{
      *     name: The name of the element (i.e. <input name="myField" />)
      *     display: 'Field Name'
@@ -76,11 +75,11 @@
      *     @argument event - The javascript event
      */
 
-    var FormValidator = function(formName, fields, callback) {
+    var FormValidator = function(formNameorNode, fields, callback) {
         this.callback = callback || defaults.callback;
         this.errors = [];
         this.fields = {};
-        this.form = document.forms[formName] || {};
+        this.form = this._getFormByNameOrElement(formNameorNode);
         this.messages = {};
         this.handlers = {};
 
@@ -208,6 +207,15 @@
         return true;
     };
 
+    FormValidator.prototype._getFormByNameOrElement = function(formNameorNode) {
+        if (typeof formNameorNode === "object") {
+            return formNameorNode;
+        }
+        else if (typeof formNameorNode === "string") {
+            return document.forms[formNameorNode] || {};
+        }
+        return {};
+    }
     /*
      * @private
      * Looks at the fields value and evaluates it against the given rules
@@ -307,13 +315,7 @@
 
             return (value !== null && value !== '');
         },
-        
-        default: function(field,defaultName){
-			return field.value !== defaultName;
-			
-		
-		},
-        
+
         matches: function(field, matchName) {
             var el = this.form[matchName];
 
