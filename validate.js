@@ -265,7 +265,7 @@
                 method = method.substring(9, method.length);
 
                 if (typeof this.handlers[method] === 'function') {
-                    if (this.handlers[method].apply(this, [field.value]) === false) {
+                    if (this.handlers[method].apply(this, [field.value, param]) === false) {
                         failed = true;
                     }
                 }
@@ -400,7 +400,7 @@
         },
 
         numeric: function(field) {
-            return (decimalRegex.test(field.value));
+            return (numericRegex.test(field.value));
         },
 
         integer: function(field) {
