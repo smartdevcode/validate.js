@@ -14,7 +14,6 @@ validate.js is a lightweight JavaScript form validation library inspired by Code
 
 ## How to use
 
-```javascript
     var validator = new FormValidator('example_form', [{
         name: 'req',
         display: 'required',
@@ -41,7 +40,6 @@ validate.js is a lightweight JavaScript form validation library inspired by Code
             // Show the errors
         }
     });
-```
 
 ## Documentation
 
