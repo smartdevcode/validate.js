@@ -1,6 +1,6 @@
 /*
- * validate.js 1.4.1
- * Copyright (c) 2011 - 2014 Rick Harrison, http://rickharrison.me
+ * validate.js 2.0.0
+ * Copyright (c) 2011 - 2015 Rick Harrison, http://rickharrison.me
  * validate.js is open sourced under the MIT license.
  * Portions of validate.js are inspired by CodeIgniter.
  * http://rickharrison.github.com/validate.js
@@ -348,17 +348,23 @@
                     }
                 }
 
-                this.errors.push({
+                var existingError;
+                for (var i = 0; i < this.errors.length; i += 1) {
+                    if (field.id === this.errors[i].id) {
+                        existingError = this.errors[i];
+                    }
+                }
+                var errorObject = existingError || {
                     id: field.id,
                     display: field.display,
                     element: field.element,
                     name: field.name,
                     message: message,
+                    messages: [],
                     rule: method
-                });
-
-                // Break out so as to not spam with validation errors (i.e. required and valid_email)
-                break;
+                };
+                errorObject.messages.push(message);
+                if (!existingError) this.errors.push(errorObject);
             }
         }
     };
