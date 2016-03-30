@@ -1,6 +1,6 @@
 /*
- * validate.js 1.4.1
- * Copyright (c) 2011 - 2014 Rick Harrison, http://rickharrison.me
+ * validate.js 2.0.1
+ * Copyright (c) 2011 - 2015 Rick Harrison, http://rickharrison.me
  * validate.js is open sourced under the MIT license.
  * Portions of validate.js are inspired by CodeIgniter.
  * http://rickharrison.github.com/validate.js
@@ -318,7 +318,8 @@
      */
 
     FormValidator.prototype._validateField = function(field) {
-        var rules = field.rules.split('|'),
+        var i, j,
+            rules = field.rules.split('|'),
             indexOfRequired = field.rules.indexOf('required'),
             isEmpty = (!field.value || field.value === '' || field.value === undefined);
 
@@ -326,7 +327,7 @@
          * Run through the rules and execute the validation methods as needed
          */
 
-        for (var i = 0, ruleLength = rules.length; i < ruleLength; i++) {
+        for (i = 0, ruleLength = rules.length; i < ruleLength; i++) {
             var method = rules[i],
                 param = null,
                 failed = false,
@@ -390,16 +391,24 @@
                     }
                 }
 
-                this.errors.push({
+                var existingError;
+                for (j = 0; j < this.errors.length; j += 1) {
+                    if (field.id === this.errors[j].id) {
+                        existingError = this.errors[j];
+                    }
+                }
+
+                var errorObject = existingError || {
                     id: field.id,
+                    display: field.display,
                     element: field.element,
                     name: field.name,
                     message: message,
+                    messages: [],
                     rule: method
-                });
-
-                // Break out so as to not spam with validation errors (i.e. required and valid_email)
-                break;
+                };
+                errorObject.messages.push(message);
+                if (!existingError) this.errors.push(errorObject);
             }
         }
     };
@@ -591,7 +600,7 @@
                 len = typeArray.length;
 
             for (i; i < len; i++) {
-                if (ext == typeArray[i]) inArray = true;
+                if (ext.toUpperCase() == typeArray[i].toUpperCase()) inArray = true;
             }
 
             return inArray;
@@ -643,7 +652,6 @@
     };
 
     window.FormValidator = FormValidator;
-
 })(window, document);
 
 /*
